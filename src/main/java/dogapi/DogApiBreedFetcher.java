@@ -4,6 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -29,13 +30,17 @@ public class DogApiBreedFetcher implements BreedFetcher {
 
         String url = "https://dog.ceo/api/breed/" + breed.toLowerCase() + "/list";
         JSONObject object = new JSONObject(run(url));
-        JSONArray array = object.getJSONArray("message");
-        ArrayList<String> list = new ArrayList<>();
-        for (int i = 0; i < array.length(); i++) {
-            list.add(array.getString(i));
-        }
+        try {
+            JSONArray array = object.getJSONArray("message");
+            ArrayList<String> list = new ArrayList<>();
+            for (int i = 0; i < array.length(); i++) {
+                list.add(array.getString(i));
+            }
 
-        return list;
+            return list;
+        } catch (JSONException e) {
+            throw new BreedNotFoundException(breed);
+        }
     }
 
 
